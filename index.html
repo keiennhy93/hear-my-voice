@@ -362,6 +362,8 @@
       justify-content:center;
       margin-left:auto;
       box-sizing:border-box;
+      transition:width 0.25s ease, padding 0.25s ease, gap 0.25s ease;
+      overflow:hidden;
     }
     #search-icon-btn svg{ width:18px; height:18px; }
     .search-box input{
@@ -369,7 +371,7 @@
       width:0;
     }
     .search-box.expanded{
-      width:auto;
+      width:180px;
       gap:8px;
       padding:0 14px;
     }
@@ -557,6 +559,11 @@
     if(!searchBoxEl.contains(e.target)){
       searchBoxEl.classList.remove('expanded');
     }
+  });
+
+  // 手機備援：輸入框失去焦點（例如收起鍵盤）也自動收合
+  document.getElementById('search-input').addEventListener('blur', () => {
+    setTimeout(() => { searchBoxEl.classList.remove('expanded'); }, 150);
   });
 
    // ---- 搜尋 + 標籤篩選 ----
