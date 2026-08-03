@@ -552,6 +552,13 @@
     });
   }
 
+  // 點擊搜尋欄以外的地方，自動收合回放大鏡 icon
+  document.addEventListener('click', (e) => {
+    if(!searchBoxEl.contains(e.target)){
+      searchBoxEl.classList.remove('expanded');
+    }
+  });
+
    // ---- 搜尋 + 標籤篩選 ----
   const cards = Array.from(document.querySelectorAll('.card'));
   const searchInput = document.getElementById('search-input');
@@ -604,6 +611,15 @@
   searchInput.addEventListener('input', (e) => {
     searchTerm = e.target.value.trim().toLowerCase();
     applyFilters();
+  });
+
+  searchInput.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter'){
+      searchTerm = searchInput.value.trim().toLowerCase();
+      applyFilters();
+      searchInput.blur();
+      searchBoxEl.classList.remove('expanded');
+    }
   });
 
   tagPills.forEach(pill => {
