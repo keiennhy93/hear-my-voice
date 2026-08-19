@@ -1,0 +1,39 @@
+name: Scheduled Publish
+
+# 馬來西亞時間中午 12:00 = UTC 04:00，這裡設定每天 UTC 04:00 觸發一次
+# 注意：GitHub Actions 排程有 10-30 分鐘左右的誤差，不是精確到秒
+# 想改時間：https://crontab.guru 產生對應的 cron 字串（記得換算成 UTC）
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch:   # 也可以到 Actions 分頁手動點「Run workflow」測試
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 檢查 drafts 資料夾並發布到期文章
+        run: node scripts/publish-scheduled.js
+
+      - name: 若有變更則自動 commit + push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "現在沒有文章需要發布，略過提交。"
+          else
+            git commit -m "自動發布排程文章 $(date -u +%Y-%m-%d)"
+            git push
+          fi
